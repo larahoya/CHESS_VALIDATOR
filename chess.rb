@@ -54,21 +54,57 @@ class Board
 		end
 	end
 
-	def check_object(position)
-		element = @grid[position[0]][position[1]]
-		if element[0]=='b'
-			color = "black"
-		else
-			color = "white"
+	def read_movements_from_file(file)
+		letters = {"a"=>0, "b"=>1, "c"=>2, "d"=>3, "e"=>4, "f"=>5, "g"=>6, "h"=>7, 
+			"1"=>0, "2"=>1, "3"=>2, "4"=>3, "5"=>4, "6"=>5, "7"=>6, "8"=>7}
+		moves = IO.read(file).split("\n").map do |line|
+			line.split(' ').map do |element|
+				element.reverse.split('').map do |c|
+					c = letters[c]
+				end
+			end
 		end
-		object_type = @types_of_objects[element[1].to_sym]
-		object_type.new(element, position, color)
+		return moves
 	end
 
-	def move_checking(initial, final)
-		piece = check_object(initial)
-		piece.check_move(final)
+	def check_object(position)
+		element = @grid[position[0]][position[1]]
+		if element == nil
+			return nil
+		elsif element.to_s[0] == "b"
+			color = "black"
+			object_type = @types_of_objects[element[1].to_sym]
+			object_type.new(element, position, color)
+		else
+			color = "white"
+			object_type = @types_of_objects[element[1].to_sym]
+			object_type.new(element, position, color)
+		end
 	end
+
+	def is_empty?(destiny_position)
+		@grid[destiny_position[0]][destiny_position[1]] == nil
+	end
+
+	def move_checking(move)
+		piece = check_object(move[0])
+		if piece != nil && is_empty?(move[1])
+			piece.check_move(move[1])
+		else
+			return "ILLEGAL"
+		end
+	end
+
+	def check_array_of_moves(file)
+		results = read_movements_from_file(file).map do |move|
+			move_checking(move)
+		end
+	end
+
+	def write_file(initial_file, result_file)
+		text = check_array_of_moves(initial_file). join("\n")
+		IO.write(result_file, text)
+	end 
 
 end
 
@@ -81,10 +117,6 @@ class Piece
 		@piece = piece
 		@position = position
 		@color = color
-	end
-
-	def empty_square?(board, square)
-		board.grid[square[0]][square[1]] == nil
 	end
 
 end
@@ -175,8 +207,7 @@ end
 my_board = Board.new
 
 my_board.read_grid_from_file('board.txt')
-puts my_board.move_checking([0,0],[5,0])
-
+my_board.write_file('moves.txt','result.txt')
 
 
 
