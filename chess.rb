@@ -1,3 +1,5 @@
+require 'pry'
+
 module Movements
 
 	def horizontal_vertical_move?(initial, final)
@@ -33,14 +35,39 @@ end
 
 class Board
 
-	attr_reader :grid
+	attr_reader :grid, :piece, :piece
 
-	def initialize(grid)
-		@grid = grid
+	def initialize
+		@grid = []
+		@types_of_objects = {P: Pawn, R: Rook, N: Knight, B: Bishop, Q: Queen, K: King}
+	end
+
+	def read_grid_from_file(file)
+		@grid = IO.read(file).split("\n").map do |line|
+			line.split(' ').map do |element|
+				if element == '--'
+					element = nil
+				else
+					element.to_sym
+				end
+			end
+		end
+	end
+
+	def check_object(position)
+		element = @grid[position[0]][position[1]]
+		if element[0]=='b'
+			color = "black"
+		else
+			color = "white"
+		end
+		object_type = @types_of_objects[element[1].to_sym]
+		object_type.new(element, position, color)
 	end
 
 	def move_checking(initial, final)
-		@grid[initial[0]][initial[1]].check_move(final)
+		piece = check_object(initial)
+		piece.check_move(final)
 	end
 
 end
@@ -145,30 +172,11 @@ class Knight < Piece
 end
 
 
-pawn1 = Pawn.new(:wP, [1,7], "black")
-rook1 = Rook.new(:wR, [0,0], "white")
-queen1 = Queen.new(:wQ, [2,3], "white")
-bishop1 = Bishop.new(:wB, [1,1], "white")
-king1 = King.new(:wK, [6,4], "white")
-knight1 = Knight.new(:wN, [5,2], "white")
+my_board = Board.new
 
+my_board.read_grid_from_file('board.txt')
+puts my_board.move_checking([0,0],[5,0])
 
-grid1 = [[rook1,nil,nil,nil,nil,nil,nil,nil],
-		[nil,bishop1,nil,nil,nil,nil,nil,pawn1],
-		[nil,nil,nil,queen1,nil,nil,nil,nil],
-		[nil,nil,nil,nil,nil,nil,nil,nil],
-		[nil,nil,nil,nil,nil,nil,nil,nil],
-		[nil,nil,knight1,nil,nil,nil,nil,nil],
-		[nil,nil,nil,nil,nil,nil,nil,nil],
-		[nil,nil,nil,nil,nil,nil,nil,nil]]
-
-my_board = Board.new(grid1)
-
-puts my_board.move_checking([0,0],[6,0])
-puts my_board.move_checking([1,7],[3,7])
-puts my_board.move_checking([2,3],[7,3])
-puts my_board.move_checking([1,1],[2,0])
-puts my_board.move_checking([5,2],[6,4])
 
 
 
