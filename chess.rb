@@ -1,4 +1,3 @@
-require 'pry'
 
 module Movements
 
@@ -7,15 +6,15 @@ module Movements
 	end
 
 	def one_square_vertical_move?(initial, final)
-		final[0] == initial[0] + 1 &&  final[1] == initial[1]
+		(final[0] == (initial[0] + 1) || final[0] == (initial[0] - 1)) &&  final[1] == initial[1]
 	end
 
 	def one_square_horizontal_move?(initial, final)
-		final[0] == initial[0] &&  final[1] == initial[1] + 1
+		final[0] == initial[0] &&  (final[1] == initial[1] + 1 || final[1] == initial[1] - 1)
 	end
 
 	def two_square_vertical_move?(initial, final)
-		final[0] == initial[0] + 2 ||  final[1] == initial[1]
+		(final[0] == (initial[0] + 2) || final[0] == (initial[0] - 2)) &&  final[1] == initial[1]
 	end
 
 	def diagonal_move?(initial, final)
@@ -56,7 +55,7 @@ class Board
 
 	def read_movements_from_file(file)
 		letters = {"a"=>0, "b"=>1, "c"=>2, "d"=>3, "e"=>4, "f"=>5, "g"=>6, "h"=>7, 
-			"1"=>0, "2"=>1, "3"=>2, "4"=>3, "5"=>4, "6"=>5, "7"=>6, "8"=>7}
+			"1"=>7, "2"=>6, "3"=>5, "4"=>4, "5"=>3, "6"=>2, "7"=>1, "8"=>0}
 		moves = IO.read(file).split("\n").map do |line|
 			line.split(' ').map do |element|
 				element.reverse.split('').map do |c|
