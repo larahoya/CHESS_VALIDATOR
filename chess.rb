@@ -1,3 +1,5 @@
+require 'RSpec'
+
 module Movements
 
   def horizontal_vertical_move?(initial, final)
@@ -206,6 +208,17 @@ my_board = Board.new
 my_board.read_grid_from_file('complex_board.txt')
 my_board.write_file('complex_moves.txt','complex_result.txt')
 
+RSpec.describe "Rook validator" do
+  
+  it "returns LEGAL for a correct" do
+    expect(Rook.new(:wR, [0,0], "white").check_move([0,5])).to eq("LEGAL")
+  end
+
+  it "returns LEGAL for a correct" do
+    expect(Rook.new(:wR, [0,0], "white").check_move([5,0])).to eq("LEGAL")
+  end
+  
+end
 
 
 
